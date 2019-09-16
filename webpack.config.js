@@ -1,10 +1,11 @@
-var path = require("path")
+const path = require("path")
+const webpack = require("webpack")
 
-var DIST_DIR = path.resolve(__dirname, "dist")
-var SRC_DIR = path.resolve(__dirname, "src")
+const DIST_DIR = path.resolve(__dirname, "dist")
+const SRC_DIR = path.resolve(__dirname, "src")
 
-var config = {
-  entry: SRC_DIR + "/app/index.js",
+const config = {
+  entry: SRC_DIR + "/index.js",
   output: {
     path: DIST_DIR + "/app",
     filename: "bundle.js",
@@ -13,15 +14,32 @@ var config = {
   module: {
     rules: [
       {
-        test: /\.js?/,
+        test: /\.(js|jsx)$/,
         include: SRC_DIR,
         exclude: /node_modules/,
-        use: ["babel-loader"]
-        // query: {
-        //     presets: ["@babel/preset-env", "@babel/preset-react"]
-        // }
+        use: { loader: "babel-loader" }
+      },
+      {
+        test: /\.html$/,
+        use: [
+          {
+            loader: "html-loader"
+          }
+        ]
+      },
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"]
       }
     ]
+  },
+  resolve: {
+    extensions: ["*", ".js", ".jsx"]
+  },
+  plugins: [new webpack.HotModuleReplacementPlugin()],
+  devServer: {
+    contentBase: DIST_DIR,
+    hot: true
   }
 }
 
